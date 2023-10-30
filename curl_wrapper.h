@@ -5,6 +5,7 @@
 
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #define CURL_STATICLIB
 #include "curl/curl.h"
@@ -26,7 +27,9 @@ const int HEADERS_HTTP = 1;
 const int NO_HEADERS_HTTPS = 0;
 const int HEADERS_HTTPS = 1;
 
-class RestHandler final
+using sheaders = struct curl_slist;
+
+class RestHandler 
 {
 public:
 	RestHandler() {};
@@ -35,12 +38,25 @@ public:
 	void clearBuffer() { response.clear(); };
 	std::string getBuffer()const { return response; };
 
-	bool send(const char* url, int opt = NO_HEADERS_HTTP, int secureit = NO_HEADERS_HTTPS);
+	virtual bool send(	const char* url, 
+						int opt = NO_HEADERS_HTTP, 
+						int secureit = NO_HEADERS_HTTPS,
+						const char* method="GET");
 
+	virtual void setHeaders()
+	{
+		headers = curl_slist_append(headers, "Accept: application/json");
+		headers = curl_slist_append(headers, "Content-Type: application/json");
+		headers = curl_slist_append(headers, "charset: utf-8");
+	}
+
+protected:
+	sheaders* headers = nullptr;
 private:
 	RestHandler(RestHandler&) = delete;
 	RestHandler operator=(RestHandler&) = delete;
 	std::string response;
+
 
 	const char* pPassphrase = nullptr;
 	const char* pCertFile = "testcert.pem";
@@ -86,4 +102,17 @@ private:
 		/* disconnect if we cannot validate server's cert */
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
 	}
+};
+
+
+class CDeezer final : public RestHandler
+{
+public:
+	virtual ~CDeezer() {};
+	bool getArtistInfo();
+	void setArtist(std::string& art) { artist = art; };
+	std::string getArtist()const { return artist; };
+	virtual void setHeaders() override;
+private:
+	std::string artist;
 };

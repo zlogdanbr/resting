@@ -1,16 +1,14 @@
 #include "curl_wrapper.h"
 
-bool RestHandler::send(const char* url, int opt , int secureit )
+bool RestHandler::send(const char* url, int opt , int secureit, const char* method)
 {
     clearBuffer();
-    struct curl_slist* headers = nullptr; // init to NULL is important 
+
     curl_global_init(CURL_GLOBAL_ALL);
 
     if (opt != NO_HEADERS_HTTP)
     {
-        headers = curl_slist_append(headers, "Accept: application/json");
-        headers = curl_slist_append(headers, "Content-Type: application/json");
-        headers = curl_slist_append(headers, "charset: utf-8");
+        setHeaders();
     }
 
     curl_global_init(CURL_GLOBAL_ALL);
@@ -23,6 +21,7 @@ bool RestHandler::send(const char* url, int opt , int secureit )
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
 
         CURLcode code = curl_easy_perform(curl);
 
@@ -41,6 +40,26 @@ bool RestHandler::send(const char* url, int opt , int secureit )
     }
 
     curl_global_cleanup();
+    return true;
+}
+
+void CDeezer::setHeaders()
+{
+    //headers = curl_slist_append(headers, "X-RapidAPI-Key: SIGN-UP-FOR-KEY");
+    headers = curl_slist_append(headers, "X-RapidAPI-Host: deezerdevs-deezer.p.rapidapi.com");
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+}
+
+bool CDeezer::getArtistInfo()
+{   
+    // https://api.deezer.com/search?q=eminem
+
+    std::stringstream os;
+    os << "https://api.deezer.com/search?q=";
+    os << getArtist();
+    os << "&output=json";
+    std::cout << os.str();
+    send(os.str().c_str(), 1);    
     return true;
 }
 

@@ -3,7 +3,9 @@
 
 int main(int argc, wchar_t* argv[]) 
 {
-	RestHandler r;
-	r.send("https://reqres.in/api/users?page=2");
-	std::cout << r.getBuffer();
+	CDeezer deezer;
+	std::string artist = "ac/dc";
+	deezer.setArtist(artist);
+	deezer.getArtistInfo();
+	std::cout << deezer.getBuffer();
 }
