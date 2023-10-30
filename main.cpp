@@ -3,6 +3,7 @@
 
 int main(int argc, wchar_t* argv[]) 
 {
-	std::cout << send("https://reqres.in/api/users?page=2");
-	std::cout << sendWithHeaders("https://reqres.in/api/users?page=2");
+	RestHandler r;
+	r.send("https://reqres.in/api/users?page=2");
+	std::cout << r.getBuffer();
 }

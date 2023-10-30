@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Administrador\Documents\GitHub\OpenSSL-Win64\include;C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-debug-static-ipv6-sspi-schannel\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Administrador\Documents\GitHub\nlohmann;C:\Users\Administrador\Documents\GitHub\OpenSSL-Win64\include;C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-debug-static-ipv6-sspi-schannel\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-release-static-ipv6-sspi-schannel\lib;C:\Users\Administrador\Documents\GitHub\OpenSSL-Win64\lib;C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-debug-static-ipv6-sspi-schannel\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\Administrador\Documents\GitHub\OpenSSL-Win64\include;C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-debug-static-ipv6-sspi-schannel\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Administrador\Documents\GitHub\nlohmann;C:\Users\Administrador\Documents\GitHub\OpenSSL-Win64\include;C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-debug-static-ipv6-sspi-schannel\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-release-static-ipv6-sspi-schannel\lib;C:\Users\Administrador\Documents\GitHub\OpenSSL-Win64\lib;C:\Users\Administrador\Documents\GitHub\libcurl\libcurl-vc15-x64-debug-static-ipv6-sspi-schannel\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
