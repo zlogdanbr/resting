@@ -2,6 +2,7 @@
 #pragma once
 // Started using the example from
 // https://juhilee.hashnode.dev/configuring-libcurl-in-visual-studio-2022
+// I recommend starting from there
 
 
 #include <iostream>
