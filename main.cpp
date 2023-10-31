@@ -4,7 +4,7 @@
 #include <json.hpp>
 using json = nlohmann::json;
 
-int main(int argc, wchar_t* argv[]) 
+void doDeezer()
 {
 	// create an instance of a Deezer object
 	CDeezer deezer;
@@ -21,4 +21,26 @@ int main(int argc, wchar_t* argv[])
 
 	// pretty print it
 	std::cout << response.dump(4) << std::endl;
+}
+
+
+void doQueryWithJson()
+{
+	std::string url = "";
+	// "{ \"happy\": true, \"pi\": 3.141 }" or
+	// std::string s = "{ \"happy\": true, \"pi\": 3.141 }";
+	std::string sjson = "";
+	CQueryWithJson jquery;
+	jquery.getResponsePost(url, sjson);
+	auto response = json::parse(jquery.getBuffer());
+
+	// pretty print it
+	std::cout << response.dump(4) << std::endl;
+
+}
+
+
+int main(int argc, wchar_t* argv[]) 
+{
+	doDeezer();
 }

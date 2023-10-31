@@ -44,27 +44,10 @@ public:
 						int secureit = NO_HEADERS_HTTPS,
 						const char* method="GET");
 
-	virtual void setHeaders()
-	{
-		headers = curl_slist_append(headers, "Accept: application/json");
-		headers = curl_slist_append(headers, "Content-Type: application/json");
-		headers = curl_slist_append(headers, "charset: utf-8");
-	}
 
 protected:
 	sheaders* headers = nullptr;
-private:
-	RestHandler(RestHandler&) = delete;
-	RestHandler operator=(RestHandler&) = delete;
 	std::string response;
-
-
-	const char* pPassphrase = nullptr;
-	const char* pCertFile = "testcert.pem";
-	const char* pCACertFile = "cacert.pem";
-	const char* pHeaderFile = "dumpit";
-	const char* pKeyName = "testkey.pem";
-	const char* pKeyType = "PEM";
 
 	static int writer(char* data, size_t size, size_t nmemb, std::string* writerData)
 	{
@@ -73,36 +56,22 @@ private:
 
 		writerData->append(data, size * nmemb);
 
-		return (size * nmemb);
+		return static_cast<int>(size * nmemb);
 	}
 
-	void setSecurity(CURL* curl) const
-	{
-		/* cert is stored PEM coded in file... */
-		/* since PEM is default, we needn't set it for PEM */
-		curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
+private:
+	RestHandler(RestHandler&) = delete;
+	RestHandler operator=(RestHandler&) = delete;
+	const char* pPassphrase = nullptr;
+	const char* pCertFile = "testcert.pem";
+	const char* pCACertFile = "cacert.pem";
+	const char* pHeaderFile = "dumpit";
+	const char* pKeyName = "testkey.pem";
+	const char* pKeyType = "PEM";
 
-		/* set the cert for client authentication */
-		curl_easy_setopt(curl, CURLOPT_SSLCERT, pCertFile);
-
-		/* sorry, for engine we must set the passphrase
-		   (if the key has one...) */
-		if (pPassphrase)
-			curl_easy_setopt(curl, CURLOPT_KEYPASSWD, pPassphrase);
-
-		/* if we use a key stored in a crypto engine,
-		   we must set the key type to "ENG" */
-		curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, pKeyType);
-
-		/* set the private key (file or ID in engine) */
-		curl_easy_setopt(curl, CURLOPT_SSLKEY, pKeyName);
-
-		/* set the file with the certs validating the server */
-		curl_easy_setopt(curl, CURLOPT_CAINFO, pCACertFile);
-
-		/* disconnect if we cannot validate server's cert */
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-	}
+	void setSecurity(CURL* curl) const;
+	virtual void setHeaders();
+	virtual void setOptions(CURL* curl, const char* url, const char* method);
 };
 
 
@@ -117,3 +86,20 @@ public:
 private:
 	std::string artist;
 };
+
+class CQueryWithJson : public RestHandler
+{
+public:
+	virtual ~CQueryWithJson() {};
+	virtual void setOptions(CURL* curl, const char* url, const char* method) override;
+	bool getResponsePost(std::string& url, std::string& json);
+	bool getResponseGet(std::string& url);
+	void setjson_string(std::string j) { json_string = j; };
+	std::string getjson_string() const { return json_string;};
+private:
+	std::string json_string;
+};
+
+
+
+
