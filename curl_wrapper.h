@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 #define CURL_STATICLIB
 #include "curl/curl.h"
 
@@ -23,10 +24,8 @@
 #pragma comment (lib,"Wldap32.lib")
 #pragma comment (lib,"Crypt32.lib")
 
-const int NO_HEADERS_HTTP = 0;
-const int HEADERS_HTTP = 1;
-const int NO_HEADERS_HTTPS = 0;
-const int HEADERS_HTTPS = 1;
+const int _HTTP = 0;
+const int _HTTPS = 1;
 
 using sheaders = struct curl_slist;
 
@@ -40,13 +39,14 @@ public:
 	std::string getBuffer()const { return response; };
 
 	virtual bool send(	const char* url, 
-						int opt = NO_HEADERS_HTTP, 
-						int secureit = NO_HEADERS_HTTPS,
+						int secureit = _HTTP,
 						const char* method="GET");
 
+	void setHeaders(std::vector< std::string > headers );
 
 protected:
 	sheaders* headers = nullptr;
+	CURL* curl = nullptr;
 	std::string response;
 
 	static int writer(char* data, size_t size, size_t nmemb, std::string* writerData)
@@ -69,29 +69,19 @@ private:
 	const char* pKeyName = "testkey.pem";
 	const char* pKeyType = "PEM";
 
-	void setSecurity(CURL* curl) const;
-	virtual void setHeaders();
-	virtual void setOptions(CURL* curl, const char* url, const char* method);
+	void setSecurity() const;
+	virtual void setOptions(const char* url, const char* method);
 };
 
 
-class CDeezer final : public RestHandler
-{
-public:
-	virtual ~CDeezer() {};
-	bool getArtistInfo();
-	void setArtist(std::string& art) { artist = art; };
-	std::string getArtist()const { return artist; };
-	virtual void setHeaders() override;
-private:
-	std::string artist;
-};
+// "{ \"happy\": true, \"pi\": 3.141 }" or
+// std::string s = "{ \"happy\": true, \"pi\": 3.141 
 
-class CQueryWithJson : public RestHandler
+class CQueryWithJson final : public RestHandler
 {
 public:
 	virtual ~CQueryWithJson() {};
-	virtual void setOptions(CURL* curl, const char* url, const char* method) override;
+	virtual void setOptions(const char* url, const char* method) override;
 	bool getResponsePost(std::string& url, std::string& json);
 	bool getResponseGet(std::string& url);
 	void setjson_string(std::string j) { json_string = j; };

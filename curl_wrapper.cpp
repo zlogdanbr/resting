@@ -1,27 +1,19 @@
 #include "curl_wrapper.h"
 
-bool RestHandler::send(const char* url, int opt , int secureit, const char* method)
+bool RestHandler::send(const char* url, int secureit, const char* method)
 {
     clearBuffer();
 
     curl_global_init(CURL_GLOBAL_ALL);
-
-    if (opt != NO_HEADERS_HTTP)
-    {
-        setHeaders();
-    }
-
-    curl_global_init(CURL_GLOBAL_ALL);
-    CURL* curl = nullptr;
-
+  
     curl = curl_easy_init();
     if (curl)
     {
-        setOptions(curl, url, method);
+        setOptions(url, method);
 
-        if (secureit != NO_HEADERS_HTTPS)
+        if (secureit == _HTTPS)
         {
-            setSecurity(curl);
+            setSecurity();
         }
 
         CURLcode code = curl_easy_perform(curl);
@@ -39,25 +31,25 @@ bool RestHandler::send(const char* url, int opt , int secureit, const char* meth
     return true;
 }
 
-void RestHandler::setOptions(CURL* curl, const char* url, const char* method )
+void RestHandler::setOptions(const char* url, const char* method )
 {
-    std::cout << "\nCalling base setOptions" << std::endl;
+
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
 }
 
-void RestHandler::setHeaders()
+void RestHandler::setHeaders(std::vector< std::string > _headers)
 {
-    std::cout << "\nCalling base setHeaders" << std::endl;
-    headers = curl_slist_append(headers, "Accept: application/json");
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    headers = curl_slist_append(headers, "charset: utf-8");
+    for (auto& h : _headers)
+    {
+        headers = curl_slist_append(headers, h.c_str());
+    }
 }
 
 
-void RestHandler::setSecurity(CURL* curl) const
+void RestHandler::setSecurity() const
 {
     /* cert is stored PEM coded in file... */
     /* since PEM is default, we needn't set it for PEM */
@@ -85,28 +77,12 @@ void RestHandler::setSecurity(CURL* curl) const
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
 }
 
-void CDeezer::setHeaders()
-{
-    std::cout << "\nCalling override setHeaders" << std::endl;
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-}
 
-bool CDeezer::getArtistInfo()
-{   
-    std::stringstream os;
-    os << "https://api.deezer.com/search?q=";
-    os << getArtist();
-    os << "&output=json";
-    std::cout << os.str();
-    return send(os.str().c_str(), 1);    
-}
-
-
-void CQueryWithJson::setOptions(    CURL* curl, 
+void CQueryWithJson::setOptions(    
                                     const char* url, 
                                     const char* method)
 {
-    std::cout << "\nCalling override setOptions" << std::endl;
+
     std::string smeth = method;
 
     if (smeth == "POST")
@@ -135,8 +111,7 @@ bool CQueryWithJson::getResponsePost(std::string& url, std::string& json)
     setjson_string(json);
     std::stringstream os;
     os << url;
-    os << "&output=json";
-    return send(os.str().c_str(), 1, 0, "POST");
+    return send(os.str().c_str(), 0, "POST");
 }
 
 
@@ -144,6 +119,5 @@ bool CQueryWithJson::getResponseGet(std::string& url)
 {
     std::stringstream os;
     os << url;
-    os << "&output=json";
     return send(os.str().c_str());
 }
