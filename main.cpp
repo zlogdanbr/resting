@@ -4,12 +4,16 @@
 #include <json.hpp>
 using json = nlohmann::json;
 
-
+//----------------------------------------------------------------
 // https://dadosabertos.camara.leg.br/swagger/api.html
+// "{ \"happy\": true, \"pi\": 3.141 }" or
+// std::string s = "{ \"happy\": true, \"pi\": 3.141 
+//----------------------------------------------------------------
+
 void getIDDeputado()
 {
 	std::vector < std::string> headers = { "Accept: application/json"
-											"Content-Type: application/json"
+										   "Content-Type: application/json"
 										 };
 
 	std::string url_base = "https://dadosabertos.camara.leg.br/api/v2/";
@@ -23,11 +27,11 @@ void getIDDeputado()
 	os << "nome=" << name;
 	os << "&ordem=" << format;
 	os << "&ordenarPor=" << order;
-	CQueryWithJson jquery;
+	CHttpClient rest_client;
 	auto q = os.str();
-	jquery.setHeaders(headers);
-	jquery.getResponseGet(q);
-	auto response = json::parse(jquery.getBuffer());
+	rest_client.setHeaders(headers);
+	rest_client.getResponseGet(q);
+	auto response = json::parse(rest_client.getBuffer());
 	std::cout << response.dump(4) << std::endl;
 }
 

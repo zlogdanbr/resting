@@ -1,6 +1,6 @@
 #include "curl_wrapper.h"
 
-bool RestHandler::send(const char* url, int secureit, const char* method)
+bool CBaseHttpHandler::send(const char* url, int secureit, const char* method)
 {
     clearBuffer();
 
@@ -31,16 +31,7 @@ bool RestHandler::send(const char* url, int secureit, const char* method)
     return true;
 }
 
-void RestHandler::setOptions(const char* url, const char* method )
-{
-
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
-}
-
-void RestHandler::setHeaders(std::vector< std::string > _headers)
+void CBaseHttpHandler::setHeaders(std::vector< std::string >& _headers)
 {
     for (auto& h : _headers)
     {
@@ -48,8 +39,7 @@ void RestHandler::setHeaders(std::vector< std::string > _headers)
     }
 }
 
-
-void RestHandler::setSecurity() const
+void CBaseHttpHandler::setSecurity() const
 {
     /* cert is stored PEM coded in file... */
     /* since PEM is default, we needn't set it for PEM */
@@ -78,9 +68,7 @@ void RestHandler::setSecurity() const
 }
 
 
-void CQueryWithJson::setOptions(    
-                                    const char* url, 
-                                    const char* method)
+void CHttpClient::setOptions(  const char* url, const char* method)
 {
 
     std::string smeth = method;
@@ -91,8 +79,8 @@ void CQueryWithJson::setOptions(
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method);
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, getjson_string().c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, getjson_string().length());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, getParamsString().c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, getParamsString().length());
         curl_easy_setopt(curl, CURLOPT_POST, 1);
     }
     else
@@ -106,16 +94,16 @@ void CQueryWithJson::setOptions(
 }
 
 
-bool CQueryWithJson::getResponsePost(std::string& url, std::string& json)
+bool CHttpClient::getResponsePost(std::string& url, std::string& params)
 {
-    setjson_string(json);
+    setParamsString(params);
     std::stringstream os;
     os << url;
     return send(os.str().c_str(), 0, "POST");
 }
 
 
-bool CQueryWithJson::getResponseGet(std::string& url)
+bool CHttpClient::getResponseGet(std::string& url)
 {
     std::stringstream os;
     os << url;

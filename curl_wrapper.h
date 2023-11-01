@@ -29,11 +29,11 @@ const int _HTTPS = 1;
 
 using sheaders = struct curl_slist;
 
-class RestHandler 
+class CBaseHttpHandler 
 {
 public:
-	RestHandler() {};
-	virtual ~RestHandler() {};
+	CBaseHttpHandler() {};
+	virtual ~CBaseHttpHandler() {};
 
 	void clearBuffer() { response.clear(); };
 	std::string getBuffer()const { return response; };
@@ -42,7 +42,7 @@ public:
 						int secureit = _HTTP,
 						const char* method="GET");
 
-	void setHeaders(std::vector< std::string > headers );
+	void setHeaders(std::vector< std::string >& headers );
 
 protected:
 	sheaders* headers = nullptr;
@@ -60,8 +60,8 @@ protected:
 	}
 
 private:
-	RestHandler(RestHandler&) = delete;
-	RestHandler operator=(RestHandler&) = delete;
+	CBaseHttpHandler(CBaseHttpHandler&) = delete;
+	CBaseHttpHandler operator=(CBaseHttpHandler&) = delete;
 	const char* pPassphrase = nullptr;
 	const char* pCertFile = "testcert.pem";
 	const char* pCACertFile = "cacert.pem";
@@ -70,24 +70,20 @@ private:
 	const char* pKeyType = "PEM";
 
 	void setSecurity() const;
-	virtual void setOptions(const char* url, const char* method);
+	virtual void setOptions(const char* url, const char* method) = 0;
 };
 
-
-// "{ \"happy\": true, \"pi\": 3.141 }" or
-// std::string s = "{ \"happy\": true, \"pi\": 3.141 
-
-class CQueryWithJson final : public RestHandler
+class CHttpClient final : public CBaseHttpHandler
 {
 public:
-	virtual ~CQueryWithJson() {};
+	virtual ~CHttpClient() {};
 	virtual void setOptions(const char* url, const char* method) override;
-	bool getResponsePost(std::string& url, std::string& json);
+	bool getResponsePost(std::string& url, std::string& params);
 	bool getResponseGet(std::string& url);
-	void setjson_string(std::string j) { json_string = j; };
-	std::string getjson_string() const { return json_string;};
+	void setParamsString(std::string j) { params = j; };
+	std::string getParamsString() const { return params;};
 private:
-	std::string json_string;
+	std::string params;
 };
 
 
