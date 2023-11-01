@@ -24,16 +24,29 @@
 #pragma comment (lib,"Wldap32.lib")
 #pragma comment (lib,"Crypt32.lib")
 
-const int _HTTP = 0;
-const int _HTTPS = 1;
+constexpr int _HTTP = 0;
+constexpr int _HTTPS = 1;
 
 using sheaders = struct curl_slist;
 
 class CBaseHttpHandler 
 {
 public:
-	CBaseHttpHandler() {};
-	virtual ~CBaseHttpHandler() {};
+	CBaseHttpHandler() 
+	{
+		curl = curl_easy_init();
+		curl_global_init(CURL_GLOBAL_ALL);
+	}
+
+	virtual ~CBaseHttpHandler() 
+	{
+		if (nullptr != curl)
+		{
+			curl_easy_cleanup(curl);
+			curl_global_cleanup();
+			curl = nullptr;
+		}
+	}
 
 	void clearBuffer() { response.clear(); };
 	std::string getBuffer()const { return response; };
@@ -76,7 +89,6 @@ private:
 class CHttpClient final : public CBaseHttpHandler
 {
 public:
-	virtual ~CHttpClient() {};
 	virtual void setOptions(const char* url, const char* method) override;
 	bool getResponsePost(std::string& url, std::string& params);
 	bool getResponseGet(std::string& url);

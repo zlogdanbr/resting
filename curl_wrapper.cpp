@@ -3,10 +3,13 @@
 bool CBaseHttpHandler::send(const char* url, int secureit, const char* method)
 {
     clearBuffer();
-
-    curl_global_init(CURL_GLOBAL_ALL);
   
-    curl = curl_easy_init();
+    if ( nullptr == curl )
+    {
+        curl = curl_easy_init();
+        curl_global_init(CURL_GLOBAL_ALL);
+    }
+
     if (curl)
     {
         setOptions(url, method);
@@ -20,14 +23,11 @@ bool CBaseHttpHandler::send(const char* url, int secureit, const char* method)
 
         if (code != CURLE_OK)
         {
-            curl_easy_cleanup(curl);
-            curl_global_cleanup();
             return false;
         }
-        curl_easy_cleanup(curl);
+       
     }
-
-    curl_global_cleanup();
+    
     return true;
 }
 
