@@ -148,12 +148,42 @@ bool ObterGastosDeputado(std::string id)
 	{
 		auto buffer = rest_client.getBuffer();
 
-
+		if (buffer.size() == 0)
+		{
+			return false;
+		}
 		auto response = json::parse(buffer);
-		std::cout << response.dump(4) << std::endl;
+
+		if (response.size() == 0)
+		{
+			return false;
+		}
+
+		try
+		{
+			auto dados = response["dados"];
+			for (auto& [key, value] : dados.items())
+			{
+				for (json::iterator it = value.begin(); it != value.end(); ++it)
+				{
+					if (it.key() == "ano")
+					{
+						std::cout << "Ano:" << it.value() << "\n";
+					}
+					if (it.key() == "valorLiquido")
+					{
+						std::cout << "Gasto:" << it.value() << "\n";
+					}
+				}
+			}
+			return true;
+		}
+		catch (...)
+		{
+			return false;
+		}
 
 		return true;
-
 	}
 
 
@@ -164,9 +194,10 @@ bool ObterGastosDeputado(std::string id)
 int main(int argc, wchar_t* argv[]) 
 {
 	Deputado d;
-	if (getIDDeputado(d, "samia"))
+	if (getIDDeputado(d, "rosario"))
 	{
 		std::cout << d;
+		std::cout << "Gastos" << std::endl;
 		ObterGastosDeputado(d.id);
 	}
 	else
