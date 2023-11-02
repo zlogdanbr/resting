@@ -40,12 +40,19 @@ public:
 
 	virtual ~CBaseHttpHandler() 
 	{
+
+		if (headers != nullptr)
+		{
+			curl_slist_free_all(headers);
+		}
+
 		if (nullptr != curl)
 		{
 			curl_easy_cleanup(curl);
 			curl_global_cleanup();
 			curl = nullptr;
 		}
+
 	}
 
 	void clearBuffer() { response.clear(); };

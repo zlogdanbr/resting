@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const Deputado& d)
 	return os;
 }
 
-bool getIDDeputado(Deputado& d, std::string&& name_to_query)
+bool getIDDeputado(Deputado& d, std::string& name_to_query, CHttpClient& rest_client)
 {
 	std::vector < std::string> headers = { "Accept: application/json",
 										   "Content-Type: application/json"
@@ -50,7 +50,7 @@ bool getIDDeputado(Deputado& d, std::string&& name_to_query)
 	os << "nome=" << name;
 	os << "&ordem=" << format;
 	os << "&ordenarPor=" << order;
-	CHttpClient rest_client;
+
 	auto q = os.str();
 	rest_client.setHeaders(headers);
 
@@ -143,7 +143,7 @@ bool updateCounters(std::map<std::string, float>& expenses, std::string& key, st
 	return false;
 }
 
-bool ObterGastosDeputado(std::string id, std::map<std::string, float>& expenses)
+bool ObterGastosDeputado(std::string id, std::map<std::string, float>& expenses, CHttpClient& rest_client)
 {
 	std::vector < std::string> headers = { "Accept: application/json",
 										   "Content-Type: application/json"
@@ -160,7 +160,6 @@ bool ObterGastosDeputado(std::string id, std::map<std::string, float>& expenses)
 	os << "?ordem=" << format;
 	os << "&ordenarPor=" << order;
 
-	CHttpClient rest_client;
 	auto q = os.str();
 	rest_client.setHeaders(headers);
 	
@@ -220,16 +219,20 @@ bool ObterGastosDeputado(std::string id, std::map<std::string, float>& expenses)
 
 int main(int argc, wchar_t* argv[]) 
 {
+	std::string dep;
+	std::cout << "Digite o nome do deputado: ";
+	std::getline(std::cin, dep);
 	Deputado d;
-	if (getIDDeputado(d, "benedita"))
+	CHttpClient rest_client;
+	if (getIDDeputado(d, dep, rest_client))
 	{
 		std::cout << d;
 
 		std::map<std::string, float> expenses;
-		ObterGastosDeputado(d.id, expenses);
+		ObterGastosDeputado(d.id, expenses, rest_client);
 		for (const auto& gasto_ano : expenses)
 		{
-			std::cout << "Gastos no ano de " << gasto_ano.first << " : " << gasto_ano.second << std::endl;
+			std::cout << "Gastos no ano de " << gasto_ano.first << " : " << gasto_ano.second << " reais" << std::endl;
 		}
 	}
 	else

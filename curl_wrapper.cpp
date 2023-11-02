@@ -24,15 +24,20 @@ bool CBaseHttpHandler::send(const char* url, int secureit, const char* method)
         if (code != CURLE_OK)
         {
             return false;
-        }
-       
+        }       
     }
-    
+
     return true;
 }
 
 void CBaseHttpHandler::setHeaders(std::vector< std::string >& _headers)
 {
+    if (headers != nullptr)
+    {
+        curl_slist_free_all(headers);
+        headers = nullptr;
+    }
+
     for (auto& h : _headers)
     {
         headers = curl_slist_append(headers, h.c_str());
@@ -41,6 +46,14 @@ void CBaseHttpHandler::setHeaders(std::vector< std::string >& _headers)
 
 void CBaseHttpHandler::setSecurity() const
 {
+    if (curl_easy_setopt(curl, CURLOPT_SSLENGINE_DEFAULT, 1L) != CURLE_OK) 
+    {
+        /* set the crypto engine as default */
+        /* only needed for the first time you load
+           a engine in a curl object... */
+        fprintf(stderr, "cannot set crypto engine as default\n");
+        return;
+    }
     /* cert is stored PEM coded in file... */
     /* since PEM is default, we needn't set it for PEM */
     curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
