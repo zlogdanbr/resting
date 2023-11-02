@@ -1,11 +1,11 @@
 # resting
 
-##Introduction
+## Introduction
 
 Why I did this? A friend of mine and I were asked to come up with an app for testing a REST API.
 This was for a job position. Also, although REST is not usually used with C++, there are some companies that required this knowledge.
 
-##Details
+## Details
 
 This project implements an Httpclient, either using or not HTTPs.
 
@@ -29,9 +29,9 @@ https://github.com/nlohmann/json:
 
 Another great resources for libcurl are:
 
-https://curl.se/libcurl/
-https://curl.se/libcurl/c/libcurl-tutorial.html
-https://everything.curl.dev/libcurl/getinfo
+- https://curl.se/libcurl/
+- https://curl.se/libcurl/c/libcurl-tutorial.html
+- https://everything.curl.dev/libcurl/getinfo
 
 I used the api:
 
