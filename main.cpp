@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& os, const Deputado& d)
 
 bool getIDDeputado(Deputado& d, std::string&& name_to_query)
 {
-	std::vector < std::string> headers = { "Accept: application/json"
+	std::vector < std::string> headers = { "Accept: application/json",
 										   "Content-Type: application/json"
 										 };
 
@@ -122,9 +122,30 @@ bool getIDDeputado(Deputado& d, std::string&& name_to_query)
 	return false;
 }
 
-bool ObterGastosDeputado(std::string id)
+bool updateCounters(std::map<std::string, float>& expenses, std::string& key, std::string& v )
 {
-	std::vector < std::string> headers = { "Accept: application/json"
+	if (expenses.empty() == false)
+	{
+		auto _currentit = expenses.find(key);
+		if (_currentit != expenses.end())
+		{
+			_currentit->second = _currentit->second + std::stof(v);
+			return true;
+		}
+	}
+	else
+	{
+		expenses[key] = std::stof(v);
+		return true;
+	}
+
+
+	return false;
+}
+
+bool ObterGastosDeputado(std::string id, std::map<std::string, float>& expenses)
+{
+	std::vector < std::string> headers = { "Accept: application/json",
 										   "Content-Type: application/json"
 	};
 
@@ -142,8 +163,7 @@ bool ObterGastosDeputado(std::string id)
 	CHttpClient rest_client;
 	auto q = os.str();
 	rest_client.setHeaders(headers);
-
-
+	
 	if (rest_client.getResponseGet(q))
 	{
 		auto buffer = rest_client.getBuffer();
@@ -164,19 +184,26 @@ bool ObterGastosDeputado(std::string id)
 			auto dados = response["dados"];
 			for (auto& [key, value] : dados.items())
 			{
+				std::string ano = "";
+				std::string fvalue = "";
+
 				for (json::iterator it = value.begin(); it != value.end(); ++it)
 				{
 					if (it.key() == "ano")
 					{
-						std::cout << "Ano:" << it.value() << "\n";
+						std::stringstream y;
+						y << it.value();
+						ano = y.str();
 					}
 					if (it.key() == "valorLiquido")
 					{
-						std::cout << "Gasto:" << it.value() << "\n";
+						std::stringstream v;
+						v << it.value();
+						fvalue = v.str();
 					}
 				}
+				updateCounters(expenses, ano, fvalue);
 			}
-			return true;
 		}
 		catch (...)
 		{
@@ -194,11 +221,16 @@ bool ObterGastosDeputado(std::string id)
 int main(int argc, wchar_t* argv[]) 
 {
 	Deputado d;
-	if (getIDDeputado(d, "rosario"))
+	if (getIDDeputado(d, "benedita"))
 	{
 		std::cout << d;
-		std::cout << "Gastos" << std::endl;
-		ObterGastosDeputado(d.id);
+
+		std::map<std::string, float> expenses;
+		ObterGastosDeputado(d.id, expenses);
+		for (const auto& gasto_ano : expenses)
+		{
+			std::cout << "Gastos no ano de " << gasto_ano.first << " : " << gasto_ano.second << std::endl;
+		}
 	}
 	else
 	{
