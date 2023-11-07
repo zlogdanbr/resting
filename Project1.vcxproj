@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camara.cpp" />
     <ClCompile Include="curl_wrapper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="unit_testing.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camara.h" />
     <ClInclude Include="curl_wrapper.h" />
     <ClInclude Include="unit_testing.h" />
   </ItemGroup>

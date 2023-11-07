@@ -24,6 +24,9 @@
     <ClCompile Include="unit_testing.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="camara.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curl_wrapper.h">
@@ -31,6 +34,9 @@
     </ClInclude>
     <ClInclude Include="unit_testing.h">
       <Filter>Arquivos de Origem</Filter>
+    </ClInclude>
+    <ClInclude Include="camara.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
